@@ -13,11 +13,7 @@
          <header className="flex justify-between items-center mb-8 lg:mb-12">
            <div>
              {/* 👇 텍스트에 dark: 접두사 적용 */}
-             <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-               Works
-             </h1>
            </div>
-           <ThemeToggle />
          </header>
 
          <WorkGallery allWorks={allWorks} />
