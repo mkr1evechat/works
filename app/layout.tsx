@@ -32,4 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   );
 }
 
+export const metadata: Metadata = {
+  title: "김작가의 서재",  // 👈 여기에 탭에 뜰 이름을 적으세요
+  description: "웹소설과 시나리오를 쓰는 공간입니다.", // 👈 검색엔진 설명
+};
+
 
