@@ -83,7 +83,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
       <header className="flex justify-between items-center mb-6 md:mb-10 pb-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-4">
           <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            Works by 매띵
+            Works
           </h1>
 
           {/* PC용 성별 버튼 */}
