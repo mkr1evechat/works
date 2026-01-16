@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import type { WorkData } from '../lib/works';
 import ThemeToggle from './components/ThemeToggle';
 
-// --- 아이콘 컴포넌트 ---
+// --- 아이콘 컴포넌트들 ---
 const MenuIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
 );
@@ -22,12 +22,16 @@ const MaleIcon = () => (
 const FemaleIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="10" r="5"></circle><line x1="12" y1="15" x2="12" y2="21"></line><line x1="9" y1="18" x2="15" y2="18"></line></svg>
 );
+// 👾 디스코드 아이콘 (새로 추가됨)
+const DiscordIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.699.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419z"/>
+  </svg>
+);
 
 export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [filter, setFilter] = useState('All');
   const [sortOption, setSortOption] = useState('random');
-  
-  // 성별 필터 상태 (기본값: 선택 안 됨)
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,7 +48,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [seed, setSeed] = useState(0);
   useEffect(() => { setSeed(Math.random()); }, []);
 
-  // 성별 토글 함수
   const toggleGender = (gender: string) => {
     if (selectedGenders.includes(gender)) {
       setSelectedGenders(selectedGenders.filter(g => g !== gender));
@@ -54,22 +57,18 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   };
 
   const processedWorks = useMemo(() => {
-    // 💥 핵심 변경: 성별이 하나도 선택되지 않았으면 빈 배열 반환 (아무것도 안 보여줌)
     if (selectedGenders.length === 0) {
       return [];
     }
 
-    // 1. 장르 필터링
     let result = filter === 'All'
       ? [...allWorks]
       : allWorks.filter((work) => work.genres.includes(filter));
 
-    // 2. 성별 필터링
     result = result.filter((work) => 
       work.gender && selectedGenders.includes(work.gender)
     );
 
-    // 3. 정렬
     if (sortOption === 'newest') {
       result.sort((a, b) => b.date.localeCompare(a.date));
     } else if (sortOption === 'oldest') {
@@ -90,7 +89,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             Works
           </h1>
 
-          {/* 성별 토글 버튼 영역 */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => toggleGender('Male')}
@@ -199,12 +197,25 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               </nav>
             </div>
           </div>
+
+          {/* 👇 C. Discord Link (새로 추가된 부분!) */}
+          <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4">
+            <a
+              href="https://www.discord.com/users/1410475071549608058"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white hover:text-[#5865F2] dark:hover:text-[#5865F2] transition-colors"
+            >
+              <DiscordIcon className="w-5 h-5" />
+              <span>Discord</span>
+            </a>
+          </div>
+
         </aside>
 
         {/* 작품 목록 그리드 */}
         <main className="flex-1">
           {selectedGenders.length === 0 ? (
-            // 👇 1. 성별을 선택하지 않았을 때 보이는 안내 화면
             <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center animate-fadeIn text-gray-400 dark:text-gray-500">
               <div className="flex gap-4 mb-4 opacity-50">
                 <MaleIcon />
@@ -218,7 +229,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               </p>
             </div>
           ) : processedWorks.length > 0 ? (
-            // 👇 2. 작품이 있을 때 (그리드 표시)
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 animate-fadeIn">
               {processedWorks.map((work) => (
                 <a href={work.link} key={work.id} target="_blank" rel="noopener noreferrer" className="group block">
@@ -233,7 +243,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               ))}
             </div>
           ) : (
-            // 👇 3. 성별은 선택했으나 해당하는 작품이 없을 때
             <div className="flex items-center justify-center h-full min-h-[400px]">
               <p className="text-gray-500 dark:text-gray-400">조건에 맞는 작품이 없습니다.</p>
             </div>
