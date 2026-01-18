@@ -104,7 +104,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
         />
       )}
 
-      {/* --- 📱 모바일 전용 슬라이드 메뉴 (Drawer) --- */}
+      {/* --- 📱 모바일 전용 슬라이드 메뉴 (Drawer) - 오른쪽에서 열림 --- */}
       <div 
         className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 md:hidden ${
           isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
@@ -113,14 +113,15 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
       />
 
       <div 
-        className={`fixed top-0 left-0 h-full w-[80%] max-w-[320px] bg-white dark:bg-[#1a1a1a] z-50 shadow-2xl transform transition-transform duration-300 md:hidden overflow-y-auto ${
-          isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 right-0 h-full w-[80%] max-w-[320px] bg-white dark:bg-[#1a1a1a] z-50 shadow-2xl transform transition-transform duration-300 md:hidden overflow-y-auto ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="p-5 flex flex-col h-full">
-          {/* 헤더: X 버튼 왼쪽 */}
-          <div className="flex items-center mb-6">
-            <button onClick={() => setIsMenuOpen(false)} className="p-2 -ml-2 text-gray-500 dark:text-gray-400">
+          {/* 👇 헤더: 왼쪽(테마) --- 오른쪽(X버튼) */}
+          <div className="flex justify-between items-center mb-6">
+            <ThemeToggle /> {/* 모바일에서는 여기 안에 테마 버튼이 있습니다 */}
+            <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 text-gray-500 dark:text-gray-400">
               <XIcon />
             </button>
           </div>
@@ -252,18 +253,24 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               <FemaleIcon />
             </button>
           </div>
-          
-          {/* 모바일 메뉴 버튼 */}
+        </div>
+        
+        {/* 우측 영역: 모바일 메뉴 버튼 OR PC 테마 버튼 */}
+        <div className="flex items-center gap-2">
+          {/* PC에서만 보이는 테마 버튼 */}
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
+
+          {/* 모바일에서만 보이는 햄버거 메뉴 버튼 */}
           <button
             onClick={() => setIsMenuOpen(true)}
-            className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ml-auto"
+            className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="메뉴 열기"
           >
             <MenuIcon />
           </button>
         </div>
-        
-        <ThemeToggle />
       </header>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
@@ -329,8 +336,8 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* PC: Discord (버튼 스타일) */}
-          <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4">
+          {/* PC: Discord (border-t 없음) */}
+          <div className="mt-8">
             <a
               href="https://www.discord.com/users/1410475071549608058"
               target="_blank"
