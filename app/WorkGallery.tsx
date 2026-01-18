@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import type { WorkData } from '../lib/works';
 import ThemeToggle from './components/ThemeToggle';
-import WorkModal from './components/WorkModal'; // 👈 새로 만든 모달 컴포넌트 불러오기
+import WorkModal from './components/WorkModal';
 
 // --- 아이콘 컴포넌트들 ---
 const MenuIcon = () => (
@@ -31,13 +31,15 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [filter, setFilter] = useState('All');
   const [sortOption, setSortOption] = useState('random');
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
-  
-  // 👇 모달 상태 추가 (선택된 작품 저장)
   const [selectedWork, setSelectedWork] = useState<WorkData | null>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // PC 사이드바용 토글
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
+  // 모바일 드로어용 토글 (독립적으로 작동하게 추가)
+  const [isMobileTagsOpen, setIsMobileTagsOpen] = useState(true);
+  const [isMobileSortOpen, setIsMobileSortOpen] = useState(true);
 
   const sortOptions = [
     { id: 'newest', label: 'Newest (최신순)' },
@@ -48,6 +50,15 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
 
   const [seed, setSeed] = useState(0);
   useEffect(() => { setSeed(Math.random()); }, []);
+
+  // 메뉴 열릴 때 스크롤 막기
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMenuOpen]);
 
   const toggleGender = (gender: string) => {
     if (selectedGenders.includes(gender)) {
@@ -83,7 +94,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
 
   return (
     <div>
-      {/* --- 모달 (선택된 작품이 있을 때만 표시) --- */}
+      {/* 작품 상세 모달 */}
       {selectedWork && (
         <WorkModal 
           work={selectedWork} 
@@ -91,7 +102,124 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
         />
       )}
 
-      {/* 헤더 영역 */}
+      {/* --- 📱 모바일 전용 슬라이드 메뉴 (Drawer) --- */}
+      {/* 1. 배경 오버레이 */}
+      <div 
+        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 md:hidden ${
+          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
+      {/* 2. 슬라이드 메뉴 본체 */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-[80%] max-w-[320px] bg-white dark:bg-[#1a1a1a] z-50 shadow-2xl transform transition-transform duration-300 md:hidden overflow-y-auto ${
+          isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-5">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Menu</h2>
+            <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 text-gray-500 dark:text-gray-400">
+              <XIcon />
+            </button>
+          </div>
+
+          {/* 모바일: 성별 선택 */}
+          <div className="mb-8">
+            <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Character</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => toggleGender('Male')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
+                  selectedGenders.includes('Male')
+                    ? 'bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-400 dark:text-blue-400' 
+                    : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400'
+                }`}
+              >
+                <MaleIcon /> Male
+              </button>
+              <button
+                onClick={() => toggleGender('Female')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
+                  selectedGenders.includes('Female')
+                    ? 'bg-pink-50 border-pink-500 text-pink-600 dark:bg-pink-900/20 dark:border-pink-400 dark:text-pink-400'
+                    : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400'
+                }`}
+              >
+                <FemaleIcon /> Female
+              </button>
+            </div>
+          </div>
+
+          {/* 모바일: Tags */}
+          <div className="mb-6">
+            <button 
+              onClick={() => setIsMobileTagsOpen(!isMobileTagsOpen)}
+              className="flex items-center justify-between w-full py-2 text-lg font-bold text-gray-900 dark:text-white"
+            >
+              Tags
+              <ChevronIcon className={`transition-transform ${isMobileTagsOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <div className={`space-y-1 overflow-hidden transition-all ${isMobileTagsOpen ? 'max-h-[1000px] mt-2' : 'max-h-0'}`}>
+              {allGenres.map((genre) => (
+                <button
+                  key={genre}
+                  onClick={() => { setFilter(genre); setIsMenuOpen(false); }}
+                  className={`block w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    filter === genre
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                  }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 모바일: Sort by */}
+          <div className="mb-8">
+            <button 
+              onClick={() => setIsMobileSortOpen(!isMobileSortOpen)}
+              className="flex items-center justify-between w-full py-2 text-lg font-bold text-gray-900 dark:text-white"
+            >
+              Sort by
+              <ChevronIcon className={`transition-transform ${isMobileSortOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <div className={`space-y-1 overflow-hidden transition-all ${isMobileSortOpen ? 'max-h-[500px] mt-2' : 'max-h-0'}`}>
+              {sortOptions.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => { setSortOption(option.id); setIsMenuOpen(false); }}
+                  className={`block w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    sortOption === option.id
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 모바일: Discord */}
+          <a
+            href="https://www.discord.com/users/1410475071549608058"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-4 py-4 rounded-xl bg-[#5865F2]/10 text-[#5865F2] font-bold mt-auto"
+          >
+            <DiscordIcon className="w-6 h-6" />
+            Join Discord
+          </a>
+        </div>
+      </div>
+      {/* --------------------------------------------------- */}
+
+
+      {/* 메인 헤더 */}
       <header className="flex justify-between items-center mb-6 md:mb-10 pb-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-4">
           <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
@@ -125,12 +253,13 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </button>
           </div>
           
+          {/* 모바일 메뉴 버튼 */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsMenuOpen(true)}
             className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ml-auto"
             aria-label="메뉴 열기"
           >
-            {isMenuOpen ? <XIcon /> : <MenuIcon />}
+            <MenuIcon />
           </button>
         </div>
         
@@ -138,45 +267,9 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
       </header>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
-        {/* 사이드바 */}
-        <aside 
-          className={`
-            w-full md:w-1/5 lg:w-1/6 shrink-0
-            ${isMenuOpen ? 'block' : 'hidden'} 
-            md:block
-          `}
-        >
-          {/* 모바일 전용 성별 버튼 */}
-          <div className="md:hidden mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Character</h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => toggleGender('Male')}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md border transition-all duration-200 ${
-                  selectedGenders.includes('Male')
-                    ? 'bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-400 dark:text-blue-400' 
-                    : 'bg-transparent border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800'
-                }`}
-              >
-                <MaleIcon />
-                <span className="text-sm font-semibold">Male</span>
-              </button>
-
-              <button
-                onClick={() => toggleGender('Female')}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md border transition-all duration-200 ${
-                  selectedGenders.includes('Female')
-                    ? 'bg-pink-50 border-pink-500 text-pink-600 dark:bg-pink-900/20 dark:border-pink-400 dark:text-pink-400'
-                    : 'bg-transparent border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800'
-                }`}
-              >
-                <FemaleIcon />
-                <span className="text-sm font-semibold">Female</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Tags 섹션 */}
+        {/* PC 사이드바 (모바일에서는 숨김) */}
+        <aside className="hidden md:block w-1/5 lg:w-1/6 shrink-0">
+          {/* PC: Tags */}
           <div className="mb-6">
             <button 
               onClick={() => setIsTagsOpen(!isTagsOpen)}
@@ -187,7 +280,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               </h2>
               <ChevronIcon className={`text-gray-500 transition-transform duration-200 ${isTagsOpen ? 'rotate-180' : ''}`} />
             </button>
-            
             <div className={`transition-all duration-300 overflow-hidden ${isTagsOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
               <nav className="flex flex-col space-y-2">
                 {allGenres.map((genre) => (
@@ -207,8 +299,8 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* Sort by 섹션 */}
-          <div>
+          {/* PC: Sort by */}
+          <div className="mb-6">
             <button 
               onClick={() => setIsSortOpen(!isSortOpen)}
               className="flex items-center justify-between w-full mb-3 md:mb-4 border-b border-gray-200 dark:border-gray-700 pb-2 group"
@@ -218,7 +310,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               </h2>
               <ChevronIcon className={`text-gray-500 transition-transform duration-200 ${isSortOpen ? 'rotate-180' : ''}`} />
             </button>
-
             <div className={`transition-all duration-300 overflow-hidden ${isSortOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
               <nav className="flex flex-col space-y-2">
                 {sortOptions.map((option) => (
@@ -238,7 +329,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* Discord Link */}
+          {/* PC: Discord */}
           <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4">
             <a
               href="https://www.discord.com/users/1410475071549608058"
@@ -250,7 +341,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               <span>Discord</span>
             </a>
           </div>
-
         </aside>
 
         {/* 작품 목록 그리드 */}
@@ -272,10 +362,9 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
           ) : processedWorks.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 animate-fadeIn">
               {processedWorks.map((work) => (
-                // 👇 여기!! a태그 대신 div로 바꾸고 onClick 이벤트를 넣었습니다.
                 <div 
                   key={work.id} 
-                  onClick={() => setSelectedWork(work)} // 클릭 시 선택된 작품 상태 업데이트 (모달 열림)
+                  onClick={() => setSelectedWork(work)} 
                   className="group block cursor-pointer"
                 >
                   <div className="aspect-[2/3] overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800 relative">
