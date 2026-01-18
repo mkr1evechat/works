@@ -34,12 +34,14 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [selectedWork, setSelectedWork] = useState<WorkData | null>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // PC 사이드바용 토글
+  
+  // PC 사이드바용 토글 (기본값: 닫힘)
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
-  // 모바일 드로어용 토글 (독립적으로 작동하게 추가)
-  const [isMobileTagsOpen, setIsMobileTagsOpen] = useState(true);
-  const [isMobileSortOpen, setIsMobileSortOpen] = useState(true);
+  
+  // 모바일 드로어용 토글 (기본값: 닫힘)
+  const [isMobileTagsOpen, setIsMobileTagsOpen] = useState(false);
+  const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
 
   const sortOptions = [
     { id: 'newest', label: 'Newest (최신순)' },
@@ -103,7 +105,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
       )}
 
       {/* --- 📱 모바일 전용 슬라이드 메뉴 (Drawer) --- */}
-      {/* 1. 배경 오버레이 */}
       <div 
         className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 md:hidden ${
           isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
@@ -111,16 +112,15 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
         onClick={() => setIsMenuOpen(false)}
       />
 
-      {/* 2. 슬라이드 메뉴 본체 */}
       <div 
         className={`fixed top-0 left-0 h-full w-[80%] max-w-[320px] bg-white dark:bg-[#1a1a1a] z-50 shadow-2xl transform transition-transform duration-300 md:hidden overflow-y-auto ${
           isMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-5">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Menu</h2>
-            <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 text-gray-500 dark:text-gray-400">
+        <div className="p-5 flex flex-col h-full">
+          {/* 헤더: X 버튼 왼쪽 */}
+          <div className="flex items-center mb-6">
+            <button onClick={() => setIsMenuOpen(false)} className="p-2 -ml-2 text-gray-500 dark:text-gray-400">
               <XIcon />
             </button>
           </div>
@@ -204,15 +204,15 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* 모바일: Discord */}
+          {/* 모바일: Discord (버튼 스타일) */}
           <a
             href="https://www.discord.com/users/1410475071549608058"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-4 rounded-xl bg-[#5865F2]/10 text-[#5865F2] font-bold mt-auto"
+            className="flex items-center justify-center gap-3 px-4 py-4 rounded-xl bg-[#5865F2]/10 text-[#5865F2] font-bold mt-auto hover:bg-[#5865F2]/20 transition-colors"
           >
             <DiscordIcon className="w-6 h-6" />
-            Join Discord
+            Discord
           </a>
         </div>
       </div>
@@ -329,13 +329,13 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* PC: Discord */}
+          {/* PC: Discord (버튼 스타일) */}
           <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-4">
             <a
               href="https://www.discord.com/users/1410475071549608058"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white hover:text-[#5865F2] dark:hover:text-[#5865F2] transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#5865F2]/10 text-[#5865F2] font-bold hover:bg-[#5865F2]/20 transition-colors"
             >
               <DiscordIcon className="w-5 h-5" />
               <span>Discord</span>
