@@ -3,7 +3,7 @@ title: 'Boys Studio'
 date: '2025. 10. 17.'
 image: '/images/BoysStudio.png' # 아직 이미지가 없으니 임시 경로
 link: 'https://www.eve-chat.com/works/877c7b6c-8b1a-4b7a-bfa6-9bb0dbf9f621' # 작품 링크
-summary: ''
+summary: '#다인시뮬 #경영'
 gender: 'Male'
 genres:
   - BL

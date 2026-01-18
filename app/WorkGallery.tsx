@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import type { WorkData } from '../lib/works';
 import ThemeToggle from './components/ThemeToggle';
+import WorkModal from './components/WorkModal'; // 👈 새로 만든 모달 컴포넌트 불러오기
 
 // --- 아이콘 컴포넌트들 ---
 const MenuIcon = () => (
@@ -30,6 +31,9 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [filter, setFilter] = useState('All');
   const [sortOption, setSortOption] = useState('random');
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
+  
+  // 👇 모달 상태 추가 (선택된 작품 저장)
+  const [selectedWork, setSelectedWork] = useState<WorkData | null>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTagsOpen, setIsTagsOpen] = useState(false);
@@ -79,7 +83,15 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
 
   return (
     <div>
-      {/* 헤더 영역 (하단에 구분선 추가됨) */}
+      {/* --- 모달 (선택된 작품이 있을 때만 표시) --- */}
+      {selectedWork && (
+        <WorkModal 
+          work={selectedWork} 
+          onClose={() => setSelectedWork(null)} 
+        />
+      )}
+
+      {/* 헤더 영역 */}
       <header className="flex justify-between items-center mb-6 md:mb-10 pb-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-4">
           <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
@@ -113,7 +125,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </button>
           </div>
           
-          {/* 모바일 메뉴 버튼 */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ml-auto"
@@ -261,15 +272,19 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
           ) : processedWorks.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 animate-fadeIn">
               {processedWorks.map((work) => (
-                <a href={work.link} key={work.id} target="_blank" rel="noopener noreferrer" className="group block">
+                // 👇 여기!! a태그 대신 div로 바꾸고 onClick 이벤트를 넣었습니다.
+                <div 
+                  key={work.id} 
+                  onClick={() => setSelectedWork(work)} // 클릭 시 선택된 작품 상태 업데이트 (모달 열림)
+                  className="group block cursor-pointer"
+                >
                   <div className="aspect-[2/3] overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800 relative">
                     <img src={work.image} alt={`${work.title} 표지`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                   </div>
                   <div className="mt-3">
                     <h3 className="font-bold text-gray-900 dark:text-white text-md truncate">{work.title}</h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 truncate">{work.summary}</p>
                   </div>
-                </a>
+                </div>
               ))}
             </div>
           ) : (
