@@ -118,9 +118,9 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
         }`}
       >
         <div className="p-5 flex flex-col h-full">
-          {/* 👇 헤더: 왼쪽(테마) --- 오른쪽(X버튼) */}
+          {/* 헤더: 왼쪽(테마) --- 오른쪽(X버튼) */}
           <div className="flex justify-between items-center mb-6">
-            <ThemeToggle /> {/* 모바일에서는 여기 안에 테마 버튼이 있습니다 */}
+            <ThemeToggle />
             <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 text-gray-500 dark:text-gray-400">
               <XIcon />
             </button>
@@ -166,7 +166,8 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               {allGenres.map((genre) => (
                 <button
                   key={genre}
-                  onClick={() => { setFilter(genre); setIsMenuOpen(false); }}
+                  // 👇 여기! 클릭해도 메뉴가 닫히지 않도록 수정했습니다.
+                  onClick={() => setFilter(genre)}
                   className={`block w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     filter === genre
                       ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
@@ -192,7 +193,8 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               {sortOptions.map((option) => (
                 <button
                   key={option.id}
-                  onClick={() => { setSortOption(option.id); setIsMenuOpen(false); }}
+                  // 👇 여기! 클릭해도 메뉴가 닫히지 않도록 수정했습니다.
+                  onClick={() => setSortOption(option.id)}
                   className={`block w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     sortOption === option.id
                       ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
@@ -253,24 +255,18 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               <FemaleIcon />
             </button>
           </div>
-        </div>
-        
-        {/* 우측 영역: 모바일 메뉴 버튼 OR PC 테마 버튼 */}
-        <div className="flex items-center gap-2">
-          {/* PC에서만 보이는 테마 버튼 */}
-          <div className="hidden md:block">
-            <ThemeToggle />
-          </div>
-
-          {/* 모바일에서만 보이는 햄버거 메뉴 버튼 */}
+          
+          {/* 모바일 메뉴 버튼 */}
           <button
             onClick={() => setIsMenuOpen(true)}
-            className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ml-auto"
             aria-label="메뉴 열기"
           >
             <MenuIcon />
           </button>
         </div>
+        
+        <ThemeToggle />
       </header>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
