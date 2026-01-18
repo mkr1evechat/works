@@ -34,12 +34,8 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [selectedWork, setSelectedWork] = useState<WorkData | null>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // PC 사이드바용 토글 (기본값: 닫힘)
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
-  
-  // 모바일 드로어용 토글 (기본값: 닫힘)
   const [isMobileTagsOpen, setIsMobileTagsOpen] = useState(false);
   const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
 
@@ -53,7 +49,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
   const [seed, setSeed] = useState(0);
   useEffect(() => { setSeed(Math.random()); }, []);
 
-  // 메뉴 열릴 때 스크롤 막기
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -166,7 +161,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               {allGenres.map((genre) => (
                 <button
                   key={genre}
-                  // 👇 여기! 클릭해도 메뉴가 닫히지 않도록 수정했습니다.
                   onClick={() => setFilter(genre)}
                   className={`block w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     filter === genre
@@ -193,7 +187,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               {sortOptions.map((option) => (
                 <button
                   key={option.id}
-                  // 👇 여기! 클릭해도 메뉴가 닫히지 않도록 수정했습니다.
                   onClick={() => setSortOption(option.id)}
                   className={`block w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     sortOption === option.id
@@ -207,7 +200,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* 모바일: Discord (버튼 스타일) */}
+          {/* 모바일: Discord */}
           <a
             href="https://www.discord.com/users/1410475071549608058"
             target="_blank"
@@ -219,17 +212,17 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
           </a>
         </div>
       </div>
-      {/* --------------------------------------------------- */}
 
-
-      {/* 메인 헤더 */}
+      {/* --- 메인 헤더 (PC & 모바일 공통) --- */}
       <header className="flex justify-between items-center mb-6 md:mb-10 pb-6 border-b border-gray-200 dark:border-gray-800">
+        
+        {/* 왼쪽: Works + PC 성별 버튼 */}
         <div className="flex items-center gap-4">
           <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             Works
           </h1>
 
-          {/* PC용 성별 버튼 */}
+          {/* PC용 성별 버튼 (모바일 숨김) */}
           <div className="hidden md:flex items-center gap-2">
             <button
               onClick={() => toggleGender('Male')}
@@ -255,24 +248,30 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
               <FemaleIcon />
             </button>
           </div>
-          
-          {/* 모바일 메뉴 버튼 */}
+        </div>
+        
+        {/* 오른쪽: 버튼 영역 */}
+        <div className="flex items-center gap-2">
+          {/* PC에서는 테마 버튼만 보임 */}
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
+
+          {/* 모바일에서는 메뉴 버튼만 보임 */}
           <button
             onClick={() => setIsMenuOpen(true)}
-            className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ml-auto"
+            className="md:hidden p-2 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="메뉴 열기"
           >
             <MenuIcon />
           </button>
         </div>
-        
-        <ThemeToggle />
       </header>
 
+      {/* --- 메인 콘텐츠 (PC 사이드바 + 갤러리) --- */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
-        {/* PC 사이드바 (모바일에서는 숨김) */}
+        {/* PC 사이드바 */}
         <aside className="hidden md:block w-1/5 lg:w-1/6 shrink-0">
-          {/* PC: Tags */}
           <div className="mb-6">
             <button 
               onClick={() => setIsTagsOpen(!isTagsOpen)}
@@ -302,7 +301,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* PC: Sort by */}
           <div className="mb-6">
             <button 
               onClick={() => setIsSortOpen(!isSortOpen)}
@@ -332,7 +330,6 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* PC: Discord (border-t 없음) */}
           <div className="mt-8">
             <a
               href="https://www.discord.com/users/1410475071549608058"
@@ -346,7 +343,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
           </div>
         </aside>
 
-        {/* 작품 목록 그리드 */}
+        {/* 작품 목록 */}
         <main className="flex-1">
           {selectedGenders.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center animate-fadeIn text-gray-400 dark:text-gray-500">
