@@ -200,7 +200,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
-          {/* 모바일: Discord */}
+          {/* 모바일: Discord (버튼 스타일) */}
           <a
             href="https://www.discord.com/users/1410475071549608058"
             target="_blank"
@@ -212,17 +212,17 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
           </a>
         </div>
       </div>
+      {/* --------------------------------------------------- */}
 
-      {/* --- 메인 헤더 (PC & 모바일 공통) --- */}
+
+      {/* 메인 헤더 */}
       <header className="flex justify-between items-center mb-6 md:mb-10 pb-6 border-b border-gray-200 dark:border-gray-800">
-        
-        {/* 왼쪽: Works + PC 성별 버튼 */}
         <div className="flex items-center gap-4">
           <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             Works
           </h1>
 
-          {/* PC용 성별 버튼 (모바일 숨김) */}
+          {/* PC용 성별 버튼 */}
           <div className="hidden md:flex items-center gap-2">
             <button
               onClick={() => toggleGender('Male')}
@@ -268,9 +268,8 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
         </div>
       </header>
 
-      {/* --- 메인 콘텐츠 (PC 사이드바 + 갤러리) --- */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
-        {/* PC 사이드바 */}
+        {/* PC 사이드바 (모바일에서는 숨김) */}
         <aside className="hidden md:block w-1/5 lg:w-1/6 shrink-0">
           <div className="mb-6">
             <button 
@@ -330,6 +329,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
             </div>
           </div>
 
+          {/* 👇 PC: Discord (여기에 border-t 제거됨) */}
           <div className="mt-8">
             <a
               href="https://www.discord.com/users/1410475071549608058"
@@ -343,7 +343,7 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
           </div>
         </aside>
 
-        {/* 작품 목록 */}
+        {/* 작품 목록 그리드 */}
         <main className="flex-1">
           {selectedGenders.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center animate-fadeIn text-gray-400 dark:text-gray-500">
@@ -352,11 +352,11 @@ export default function WorkGallery({ allWorks }: { allWorks: WorkData[] }) {
                 <FemaleIcon />
               </div>
               <p className="text-lg font-medium mb-1">
-                <span className="hidden md:block">상단의 성별 아이콘을 선택해 주세요.</span>
-                <span className="md:hidden">메뉴를 열어 성별을 선택해 주세요.</span>
+                <span className="hidden md:block">조회를 원하시는 캐릭터의 성별을 선택해 주세요.</span>
+                <span className="md:hidden">메뉴를 열어 캐릭터 성별을 선택해 주세요.</span>
               </p>
-              <p className="text-sm">
-                캐릭터 성별에 따라 작품을 보여드립니다.
+              <p className="text-sm font-light">
+                Please select the character's gender.
               </p>
             </div>
           ) : processedWorks.length > 0 ? (

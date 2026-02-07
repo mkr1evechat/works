@@ -3,21 +3,21 @@ import path from 'path';
 import matter from 'gray-matter';
 
 const worksDirectory = path.join(process.cwd(), 'works');
+const publicImagesDirectory = path.join(process.cwd(), 'public', 'images');
 
-// 작품 데이터의 타입을 정의합니다. (성별 gender 추가됨)
 export interface WorkData {
   id: string;
   title: string;
   date: string;
-  image: string;
+  image: string; // 대표 이미지 (기존 유지)
   link: string;
   summary: string;
   genres: string[];
-  gender?: string; // 👈 성별 추가 (선택사항)
+  gender?: string;
+  galleryImages: string[]; // 👈 새로 추가된 갤러리 이미지 목록
 }
 
 export function getSortedWorksData(): WorkData[] {
-  // works 폴더가 없으면 빈 배열 반환 (에러 방지)
   if (!fs.existsSync(worksDirectory)) {
     return [];
   }
@@ -29,9 +29,22 @@ export function getSortedWorksData(): WorkData[] {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
+    // --- 갤러리 이미지 자동 스캔 로직 ---
+    let galleryImages: string[] = [];
+    const workImageFolder = path.join(publicImagesDirectory, id);
+
+    // 1. 해당 작품 ID로 된 폴더가 있는지 확인
+    if (fs.existsSync(workImageFolder)) {
+      // 2. 폴더 안의 파일들을 읽어서 이미지 파일만 골라냄
+      const files = fs.readdirSync(workImageFolder);
+      galleryImages = files
+        .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file)) // 이미지 확장자만 필터링
+        .map(file => `/images/${id}/${file}`); // 웹 경로로 변환
+    }
+    // ----------------------------------
+
     return {
       id,
-      // 마크다운 파일의 내용을 데이터로 변환
       ...(matterResult.data as { 
         title: string; 
         date: string; 
@@ -39,11 +52,11 @@ export function getSortedWorksData(): WorkData[] {
         link: string; 
         summary: string; 
         genres: string[];
-        gender?: string; // 👈 데이터를 읽어올 때도 성별 포함
+        gender?: string; 
       }),
+      galleryImages, // 👈 데이터에 추가
     };
   });
 
-  // 날짜순 정렬 (최신순)
   return allWorksData.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
