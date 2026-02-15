@@ -141,7 +141,6 @@ export default function WorkModal({ work, onClose }: Props) {
           {/* 3. 하단 링크 버튼 */}
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
             <a 
-              href={ } 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center justify-center w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all duration-200 shadow-lg hover:shadow-red-500/20 gap-2"
